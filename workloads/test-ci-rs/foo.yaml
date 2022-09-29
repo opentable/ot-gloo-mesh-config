@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: foo
+  namespace: mesh-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: foo
+  name: foo
+  namespace: mesh-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: foo
+  template:
+    metadata:
+      labels:
+        sidecar.istio.io/inject: "true"
+        app: foo
+        version: v1
+      namespace: consumer
+    spec:
+      containers:
+        - name: foo
+          image: larstobi/http-echo:0.2.4
+          args:
+            - -text="test-ci-rs-foo"
+            - -listen=:8080
+          ports:
+            - containerPort: 8080
+              name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: foo
+  namespace: mesh-test
+spec:
+  selector:
+    app: foo
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+---

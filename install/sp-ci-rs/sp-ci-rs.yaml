@@ -1,0 +1,7 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: KubernetesCluster
+metadata:
+  name: sp-ci-rs
+  namespace: gloo-mesh
+spec:
+  clusterDomain: sp-ci-rs

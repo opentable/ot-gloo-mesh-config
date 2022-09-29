@@ -1,0 +1,15 @@
+
+prometheusUrl: "http://prometheus-kube-prometheus-prometheus.monitoring:9090/"
+mgmtClusterName: "test-ci-rs"
+
+prometheus:
+  enabled: false
+
+glooMeshMgmtServer:
+  serviceType: NodePort
+  ports:
+    healthcheck: 8091
+
+glooMeshUi:
+  serviceType: ClusterIP
+

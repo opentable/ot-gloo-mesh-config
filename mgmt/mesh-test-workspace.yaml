@@ -1,0 +1,43 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: mesh-test
+  namespace: gloo-mesh
+  labels:
+    allow_ingress: "false"
+spec:
+  workloadClusters:
+    - name: test-ci-rs
+      namespaces:
+        - name: mesh-test
+    - name: sp-ci-rs
+      namespaces:
+        - name: mesh-test
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: mesh-test
+  namespace: mesh-test
+spec:
+  importFrom:
+    - workspaces:
+        - name: gateways
+      resources:
+        - kind: SERVICE
+  exportTo:
+    - workspaces:
+        - name: gateways
+      resources:
+        - kind: ALL
+          labels:
+            expose: "true"
+  options:
+    federation:
+      enabled: true
+      hostSuffix: global
+      serviceSelector:
+        - workspace: mesh-test
+          name: foo
+        - workspace: mesh-test
+          name: bar

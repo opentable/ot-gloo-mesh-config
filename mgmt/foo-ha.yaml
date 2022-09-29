@@ -1,0 +1,49 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+  name: foo-ha
+  namespace: mesh-test
+spec:
+  hosts:
+    - 'foo-ha.mesh-test.svc.test-ci-rs'
+  services:
+    - namespace: mesh-test
+      name: foo
+  ports:
+    - number: 80
+      protocol: HTTP
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: foo-ha
+  namespace: mesh-test
+spec:
+  hosts:
+    - 'foo-ha.mesh-test.svc.test-ci-rs'
+  workloadSelectors:
+    - selector:
+        labels:
+          app: static-client
+  http:
+    - name: foo
+      matchers:
+        - uri:
+            prefix: /
+      forwardTo:
+        destinations:
+          - ref:
+              name: foo
+              namespace: mesh-test
+              cluster: sp-ci-rs
+            port:
+              name: http
+            weight: 50
+          - ref:
+              name: foo
+              namespace: mesh-test
+              cluster: test-ci-rs
+            port:
+              name: http
+            weight: 50
+---
