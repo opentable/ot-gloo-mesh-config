@@ -1,0 +1,35 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: gateways
+  namespace: gloo-mesh
+spec:
+  workloadClusters:
+    - name: test-ci-rs
+      namespaces:
+        - name: istio-system
+    - name: sp-ci-rs
+      namespaces:
+        - name: istio-system
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: gateways
+  namespace: istio-system
+spec:
+  importFrom:
+    - workspaces:
+        - selector:
+            allow_ingress: "true"
+      resources:
+        - kind: SERVICE
+        - kind: ALL
+          labels:
+            expose: "true"
+  exportTo:
+    - workspaces:
+        - selector:
+            allow_ingress: "true"
+      resources:
+        - kind: SERVICE

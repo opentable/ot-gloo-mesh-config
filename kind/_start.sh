@@ -126,3 +126,27 @@ kubectl --context=$MGMT_CONTEXT apply -f sp-ci-rs.yaml
 
 # Assign region
 kubectl label nodes --all topology.kubernetes.io/region=qa-rs
+
+############################################## workloads ###################################################
+kubectl config use-context kind-test-ci-rs
+kubectl create namespace mesh-test
+kubectl label namespace mesh-test istio-injection=enabled
+kubectl label namespace mesh-test skip-docker-review=yes
+kubectl apply -f ../workloads/test-ci-rs/curl.yaml
+kubectl apply -f ../workloads/test-ci-rs/foo.yaml
+
+kubectl config use-context kind-sp-ci-rs
+kubectl create namespace mesh-test
+kubectl label namespace mesh-test istio-injection=enabled
+kubectl label namespace mesh-test skip-docker-review=yes
+kubectl apply -f ../workloads/sp-ci-rs/curl.yaml
+kubectl apply -f ../workloads/sp-ci-rs/foo.yaml
+kubectl apply -f ../workloads/sp-ci-rs/bar.yaml
+
+############################################## management ###################################################
+kubectl config use-context kind-test-ci-rs
+kubectl apply -f ../mgmt/root-trust-policy.yaml
+kubectl apply -f gateways-workspace.yaml
+kubectl apply -f ../mgmt/mesh-test-workspace.yaml
+kubectl apply -f ../mgmt/foo-ha.yaml
+
