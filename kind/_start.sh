@@ -1,5 +1,5 @@
-export GLOO_VERSION=2.0.23
-export GLOO_MESH_LICENSE_KEY="n/a"
+export GLOO_VERSION=2.1.0
+export GLOO_MESH_LICENSE_KEY="eyJhZGRPbnMiOiIiLCJleHAiOjE2Njg1NTY4MDAsImlhdCI6MTY2NTk2NDgwMCwiayI6IlJxd085dyIsImx0IjoidHJpYWwiLCJwcm9kdWN0IjoiZ2xvby1tZXNoIn0.38eF4YgI7-TKgDAoxhN05jTwVYnvqWgIK1vzCUDLluo"
 
 kind delete cluster --name test-ci-rs
 kind delete cluster --name sp-ci-rs
@@ -19,11 +19,11 @@ kubectl rollout status deployment prometheus -n istio-system
 helm repo add istio https://istio-release.storage.googleapis.com/charts
 helm repo update
 
-helm upgrade --install istio-base istio/base -n istio-system --wait
+helm upgrade --install istio-base istio/base -n istio-system --version 1.15.1 --wait
 kubectl label ns istio-system topology.istio.io/network=test-ci-rs-network
-helm upgrade --install istiod istio/istiod -n istio-system -f istiod-test-ci-rs.yaml  --wait
+helm upgrade --install istiod istio/istiod -n istio-system -f istiod-test-ci-rs.yaml  --version 1.15.1 --wait
 #helm upgrade --install --namespace istio-system --create-namespace istio-ingressgateway istio/gateway -f ingress-test-ci-rs.yaml  --wait
-helm upgrade --install --namespace istio-system --create-namespace istio-eastwestgateway istio/gateway -f eastwest-test-ci-rs.yaml  --wait
+helm upgrade --install --namespace istio-system --create-namespace istio-eastwestgateway istio/gateway -f eastwest-test-ci-rs.yaml --version 1.15.1  --wait
 
 
 kubectl config use-context kind-sp-ci-rs
@@ -34,11 +34,11 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.14/samp
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.14/samples/addons/kiali.yaml
 kubectl rollout status deployment prometheus -n istio-system
 
-helm upgrade --install istio-base istio/base -n istio-system --wait
+helm upgrade --install istio-base istio/base -n istio-system --version 1.15.1 --wait
 kubectl label ns istio-system topology.istio.io/network=sp-ci-rs-network
-helm upgrade --install istiod istio/istiod -n istio-system -f istiod-sp-ci-rs.yaml  --wait
+helm upgrade --install istiod istio/istiod -n istio-system -f istiod-sp-ci-rs.yaml  --version 1.15.1 --wait
 #helm upgrade --install --namespace istio-system --create-namespace istio-ingressgateway istio/gateway -f ingress-sp-ci-rs.yaml  --wait
-helm upgrade --install --namespace istio-system --create-namespace istio-eastwestgateway istio/gateway -f eastwest-sp-ci-rs.yaml  --wait
+helm upgrade --install --namespace istio-system --create-namespace istio-eastwestgateway istio/gateway -f eastwest-sp-ci-rs.yaml  --version 1.15.1 --wait
 
 
 
@@ -132,7 +132,11 @@ kubectl config use-context kind-test-ci-rs
 kubectl create namespace mesh-test
 kubectl label namespace mesh-test istio-injection=enabled
 kubectl label namespace mesh-test skip-docker-review=yes
+kubectl create namespace infra
+kubectl label namespace infra istio-injection=enabled
+kubectl label namespace infra skip-docker-review=yes
 kubectl apply -f ../workloads/test-ci-rs/curl.yaml
+kubectl apply -f ../workloads/test-ci-rs/curl-infra.yaml
 kubectl apply -f ../workloads/test-ci-rs/foo.yaml
 
 kubectl config use-context kind-sp-ci-rs
@@ -148,5 +152,6 @@ kubectl config use-context kind-test-ci-rs
 kubectl apply -f ../mgmt/root-trust-policy.yaml
 kubectl apply -f gateways-workspace.yaml
 kubectl apply -f ../mgmt/mesh-test-workspace.yaml
+kubectl apply -f ../mgmt/infra-workspace.yaml
 kubectl apply -f ../mgmt/foo-ha.yaml
 

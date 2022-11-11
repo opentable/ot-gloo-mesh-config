@@ -6,6 +6,7 @@ metadata:
 spec:
   hosts:
     - 'foo-ha.mesh-test.svc.test-ci-rs'
+    - 'foo-ha.mesh-test.svc.sp-ci-rs'
   services:
     - namespace: mesh-test
       name: foo
@@ -13,37 +14,31 @@ spec:
     - number: 80
       protocol: HTTP
 ---
-apiVersion: networking.gloo.solo.io/v2
-kind: RouteTable
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: FailoverPolicy
 metadata:
   name: foo-ha
   namespace: mesh-test
 spec:
-  hosts:
-    - 'foo-ha.mesh-test.svc.test-ci-rs'
-  workloadSelectors:
-    - selector:
-        labels:
-          app: static-client
-  http:
-    - name: foo
-      matchers:
-        - uri:
-            prefix: /
-      forwardTo:
-        destinations:
-          - ref:
-              name: foo
-              namespace: mesh-test
-              cluster: sp-ci-rs
-            port:
-              name: http
-            weight: 50
-          - ref:
-              name: foo
-              namespace: mesh-test
-              cluster: test-ci-rs
-            port:
-              name: http
-            weight: 50
+  applyToDestinations:
+    - kind: VIRTUAL_DESTINATION
+      selector:
+        name: foo-ha
+  config:
+    localityMappings: []
 ---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: OutlierDetectionPolicy
+metadata:
+  name: foo-ha
+  namespace: mesh-test
+spec:
+  applyToDestinations:
+    - kind: VIRTUAL_DESTINATION
+      selector:
+        name: foo-ha
+  config:
+    consecutiveErrors: 2
+    interval: 5s
+    baseEjectionTime: 30s
+    maxEjectionPercent: 100

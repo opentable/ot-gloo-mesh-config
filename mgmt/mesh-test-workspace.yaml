@@ -32,6 +32,10 @@ spec:
         - kind: ALL
           labels:
             expose: "true"
+    - workspaces:
+        - name: infra
+      resources:
+        - kind: ALL
   options:
     federation:
       enabled: true

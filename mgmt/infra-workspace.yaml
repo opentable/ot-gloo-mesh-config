@@ -1,0 +1,25 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: infra
+  namespace: gloo-mesh
+spec:
+  workloadClusters:
+    - name: test-ci-rs
+      namespaces:
+        - name: infra
+    - name: sp-ci-rs
+      namespaces:
+        - name: infra
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: infra
+  namespace: infra
+spec:
+  importFrom:
+    - resources:
+        - kind: ALL
+      workspaces:
+        - name: '*'
