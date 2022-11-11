@@ -1,5 +1,5 @@
 export GLOO_VERSION=2.1.0
-export GLOO_MESH_LICENSE_KEY="eyJhZGRPbnMiOiIiLCJleHAiOjE2Njg1NTY4MDAsImlhdCI6MTY2NTk2NDgwMCwiayI6IlJxd085dyIsImx0IjoidHJpYWwiLCJwcm9kdWN0IjoiZ2xvby1tZXNoIn0.38eF4YgI7-TKgDAoxhN05jTwVYnvqWgIK1vzCUDLluo"
+export GLOO_MESH_LICENSE_KEY="n/a"
 
 kind delete cluster --name test-ci-rs
 kind delete cluster --name sp-ci-rs
