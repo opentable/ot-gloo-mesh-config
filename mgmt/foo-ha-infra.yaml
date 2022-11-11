@@ -1,0 +1,30 @@
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: FailoverPolicy
+metadata:
+  name: foo-ha-infra
+  namespace: infra
+spec:
+  applyToDestinations:
+    - kind: VIRTUAL_DESTINATION
+      selector:
+        name: foo-ha
+        workspace: mesh-test
+  config:
+    localityMappings: []
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: OutlierDetectionPolicy
+metadata:
+  name: foo-ha-infra
+  namespace: infra
+spec:
+  applyToDestinations:
+    - kind: VIRTUAL_DESTINATION
+      selector:
+        name: foo-ha
+        workspace: mesh-test
+  config:
+    consecutiveErrors: 2
+    interval: 5s
+    baseEjectionTime: 30s
+    maxEjectionPercent: 100

@@ -154,4 +154,5 @@ kubectl apply -f gateways-workspace.yaml
 kubectl apply -f ../mgmt/mesh-test-workspace.yaml
 kubectl apply -f ../mgmt/infra-workspace.yaml
 kubectl apply -f ../mgmt/foo-ha.yaml
+kubectl apply -f ../mgmt/foo-ha-infra.yaml
 

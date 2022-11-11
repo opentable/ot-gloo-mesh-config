@@ -3,10 +3,14 @@ kind: VirtualDestination
 metadata:
   name: foo-ha
   namespace: mesh-test
+  labels:
+    'ot.failover': 'ha'
+    'ot.outlier.detection': 'ha'
 spec:
   hosts:
     - 'foo-ha.mesh-test.svc.test-ci-rs'
     - 'foo-ha.mesh-test.svc.sp-ci-rs'
+    - 'foo-ha.ot'
   services:
     - namespace: mesh-test
       name: foo
@@ -17,26 +21,28 @@ spec:
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: FailoverPolicy
 metadata:
-  name: foo-ha
+  name: ha
   namespace: mesh-test
 spec:
   applyToDestinations:
     - kind: VIRTUAL_DESTINATION
       selector:
-        name: foo-ha
+        labels:
+          'ot.failover': 'ha'
   config:
     localityMappings: []
 ---
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: OutlierDetectionPolicy
 metadata:
-  name: foo-ha
+  name: ha
   namespace: mesh-test
 spec:
   applyToDestinations:
     - kind: VIRTUAL_DESTINATION
       selector:
-        name: foo-ha
+        labels:
+          'ot.outlier.detection': 'ha'
   config:
     consecutiveErrors: 2
     interval: 5s
